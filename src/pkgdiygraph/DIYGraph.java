@@ -31,7 +31,7 @@ public class DIYGraph<T> implements DIYGraphInterface<T> {
         int edgeCounter = 0;
         
         // (Enumarating the keys of the hashtable ; Check if there is anymore elements ; Goes to the next element)
-        for(Enumeration<Vertex<T>> graphVertexes = graph.keys(); graphVertexes.hasMoreElements(); graphVertexes.nextElement()){
+        for(Enumeration<Vertex<T>> graphVertexes = graph.keys(); graphVertexes.hasMoreElements();){
             Vertex<T> currentVertex = (Vertex<T>) graphVertexes.nextElement();
             List<VertexesBond<T>> currentVertexNeighbors = graph.get(currentVertex);
             edgeCounter += currentVertexNeighbors.size();
@@ -70,11 +70,11 @@ public class DIYGraph<T> implements DIYGraphInterface<T> {
     public int inDegree(Vertex<T> v){
         //AKA positive degree
         int total = 0;
-        for(Enumeration<Vertex<T>> graphVertexes = graph.keys(); graphVertexes.hasMoreElements(); graphVertexes.nextElement()){
+        for(Enumeration<Vertex<T>> graphVertexes = graph.keys(); graphVertexes.hasMoreElements();){
             Vertex<T> currentVertex = (Vertex<T>) graphVertexes.nextElement();
             List<VertexesBond<T>> currentVertexNeighbors = graph.get(currentVertex);
             for(int i = 0; i < currentVertexNeighbors.size(); i++){
-                if(currentVertexNeighbors.get(i).getDestiny().getInfo().equals(v.getInfo())){
+                if(currentVertexNeighbors.get(i).getDestiny().equals(v)){
                     total++;
                 }
             }
@@ -83,14 +83,17 @@ public class DIYGraph<T> implements DIYGraphInterface<T> {
     }
     
     @Override
-    public Iterator getNeighbors(Vertex<T> v) {
+    public LinkedList getNeighbors(Vertex<T> v) {
+        this.addVertex(v);
         String output = "";
         List<VertexesBond<T>> vertexBondList = graph.get(v);
         LinkedList<Vertex<T>> vertexNeighborsList = new LinkedList<Vertex<T>>();
-        for(int i = 0; i < vertexBondList.size(); i++){
-            vertexNeighborsList.add(vertexBondList.get(i).getDestiny());
+        if(vertexBondList != null){
+            for(int i = 0; i < vertexBondList.size(); i++){
+                vertexNeighborsList.add(vertexBondList.get(i).getDestiny());
+            }
         }
-        return vertexNeighborsList.iterator();
+        return vertexNeighborsList;
     }
 
     @Override
@@ -112,8 +115,10 @@ public class DIYGraph<T> implements DIYGraphInterface<T> {
     public boolean areNeighbors(Vertex<T> v, Vertex<T> w) {
         boolean flag = false;
         for(int i = 0; i < graph.get(v).size(); i++){
-            if(graph.get(v).get(i).getDestiny().getInfo().equals(w.getInfo())){
-                flag = true;
+            if(graph.get(v).get(i).getDestiny() != null){
+                if(graph.get(v).get(i).getDestiny().getInfo().equals(w.getInfo())){
+                    flag = true;
+                }
             }
         }
         return flag;
@@ -130,7 +135,7 @@ public class DIYGraph<T> implements DIYGraphInterface<T> {
     @Override
     public void removeVertex(Vertex<T> v) {
         //Remove all VertexBond that have v as destiny
-        for(Enumeration<Vertex<T>> graphVertexes = graph.keys(); graphVertexes.hasMoreElements(); graphVertexes.nextElement()){
+        for(Enumeration<Vertex<T>> graphVertexes = graph.keys(); graphVertexes.hasMoreElements();){
             Vertex<T> currentVertex = (Vertex<T>) graphVertexes.nextElement();
             List<VertexesBond<T>> currentVertexNeighbors = graph.get(currentVertex);
             for(int i = 0; i < currentVertexNeighbors.size(); i++){
@@ -150,14 +155,14 @@ public class DIYGraph<T> implements DIYGraphInterface<T> {
         addVertex(v);
         addVertex(w);
         
-        if(!areNeighbors(v,w)){
-            VertexesBond<T> newVertexBond = new VertexesBond<T>(v,getVertexFromGraph(w));
-            graph.get(v).add(newVertexBond);
+        if(!areNeighbors(getVertexFromGraph(v),getVertexFromGraph(w))){
+            VertexesBond<T> newVertexBond = new VertexesBond<T>(getVertexFromGraph(v),getVertexFromGraph(w));
+            graph.get(getVertexFromGraph(v)).add(newVertexBond);
         }
         if(!this.directed){
-            if(!areNeighbors(w,v)){
-                VertexesBond<T> otherVertexBond = new VertexesBond<T>(w,getVertexFromGraph(v));
-                graph.get(w).add(otherVertexBond);
+            if(!areNeighbors(getVertexFromGraph(w),getVertexFromGraph(v))){
+                VertexesBond<T> otherVertexBond = new VertexesBond<T>(getVertexFromGraph(w),getVertexFromGraph(v));
+                graph.get(getVertexFromGraph(w)).add(otherVertexBond);
             }
         }
     }
@@ -181,8 +186,8 @@ public class DIYGraph<T> implements DIYGraphInterface<T> {
     @Override
     public Vertex<T> getVertexFromGraph(Vertex<T> VertexToFind) {
         Vertex<T> temp = null;
-        if (graph.containsKey(VertexToFind)) {
-            for (Enumeration<Vertex<T>> graphVertexes = graph.keys(); graphVertexes.hasMoreElements(); graphVertexes.nextElement()) {
+        if(graph.containsKey(VertexToFind)) {
+            for (Enumeration<Vertex<T>> graphVertexes = graph.keys(); graphVertexes.hasMoreElements();) {
                 Vertex<T> currentVertex = (Vertex<T>) graphVertexes.nextElement();
                 if(currentVertex.getInfo().equals(VertexToFind.getInfo())){
                     temp = currentVertex;
@@ -193,5 +198,8 @@ public class DIYGraph<T> implements DIYGraphInterface<T> {
         return temp;
     }
     
+    public Enumeration enumerationOfKeys(){
+        return graph.keys();
+    }
    
 }

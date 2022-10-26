@@ -1,6 +1,7 @@
 package pkgdiygraph;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  *
@@ -11,7 +12,7 @@ public interface DIYGraphInterface<T> {
     int qtdVertex();
     int qtdEdges();
     int degrees(Vertex<T> v);
-    Iterator getNeighbors(Vertex<T> v);
+    LinkedList getNeighbors(Vertex<T> v);
     Iterator getIncidentes(Vertex<T> v);
     boolean areNeighbors(Vertex<T> v, Vertex<T> w);
     
