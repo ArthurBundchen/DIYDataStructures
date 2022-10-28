@@ -68,7 +68,7 @@ public class DIYLinkedList<T> implements DIYLinkedListInterface<T> {
 
     @Override
     public int indexOf(T e) {
-        Node p = head ;
+        Node<T> p = this.head;
         int i = -1;
         int k = 0;
         if(!this.isEmpty()){
